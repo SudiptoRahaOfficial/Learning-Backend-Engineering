@@ -17,7 +17,7 @@ const postSchema = new Schema(
 )
 
 // making model
-const postModel = model('note', postSchema)
+const postModel = model('post', postSchema)
 
 // exporting model
 module.exports = postModel
