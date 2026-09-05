@@ -1,5 +1,6 @@
 // importing dependencis
 const express = require('express')
+const routes = require('./routes/auth.routes')
 
 // making app
 const app = express()
@@ -10,6 +11,8 @@ const middlewares = [
 	express.json(), // accept json-data
 ]
 app.use(middlewares) // using middlewares
+
+app.use(routes)
 
 // exporting app
 module.exports = app
