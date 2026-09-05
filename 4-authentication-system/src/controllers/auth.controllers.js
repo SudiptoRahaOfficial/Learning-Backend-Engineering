@@ -1,7 +1,7 @@
 // importing dependencis
 const userModel = require('../models/user.model')
 
-// controller function for register route
+// controller function for - register post route
 async function registerPostController(req, res, next) {
 	res.send('Register!')
 }

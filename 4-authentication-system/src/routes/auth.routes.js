@@ -2,7 +2,7 @@
 const router = require('express').Router()
 const { registerPostController } = require('../controllers/auth.controllers')
 
-// register route
+// register - post route
 router.post('/register', registerPostController)
 
 // exporting router
