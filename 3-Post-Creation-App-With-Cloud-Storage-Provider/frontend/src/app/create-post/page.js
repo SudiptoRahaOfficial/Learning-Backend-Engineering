@@ -1,6 +1,19 @@
 'use client'
+import React, { useEffect } from 'react'
+import axios from 'axios'
+import { useRouter } from 'next/navigation'
 
 export default function Home() {
+	const router = useRouter()
+	async function handleSubmit(event) {
+		event.preventDefault()
+		const formData = new FormData(event.target)
+		axios
+			.post('http://localhost:5000/create-post', formData)
+			.then((res) => {
+				router.push('/')
+			})
+	}
 	return (
 		<main className='min-h-screen bg-gray-200 px-4 py-8 sm:px-6 sm:py-10 lg:px-8 flex items-center justify-center'>
 			<section className='mx-auto w-full max-w-2xl'>
@@ -16,7 +29,10 @@ export default function Home() {
 				</div>
 
 				{/* Create post form */}
-				<form className='space-y-6 rounded-sm border border-gray-300 bg-gray-100 p-5 sm:p-6'>
+				<form
+					onSubmit={handleSubmit}
+					className='space-y-6 rounded-sm border border-gray-300 bg-gray-100 p-5 sm:p-6'
+				>
 					{/* Image input */}
 					<div>
 						<label
@@ -58,7 +74,7 @@ export default function Home() {
 					{/* Submit button */}
 					<button
 						type='submit'
-						className='w-full cursor-pointer rounded-sm bg-gray-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-gray-700'
+						className='w-full cursor-pointer rounded-sm bg-gray-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-gray-800'
 					>
 						Create Post
 					</button>
