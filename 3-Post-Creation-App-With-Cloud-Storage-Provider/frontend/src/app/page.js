@@ -1,8 +1,11 @@
 'use client'
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
+import { useRouter } from 'next/navigation'
 
 export default function Home() {
+	const router = useRouter()
+
 	const [posts, setPosts] = useState([])
 
 	useEffect(() => {
@@ -15,14 +18,23 @@ export default function Home() {
 		<main className='min-h-screen px-4 py-8 sm:px-6 sm:py-10 lg:px-8 bg-gray-200'>
 			<section className='mx-auto w-full max-w-7xl'>
 				{/* Page heading */}
-				<div className='mb-8 sm:mb-10'>
-					<h1 className='text-2xl font-bold tracking-tight sm:text-3xl'>
-						Posts
-					</h1>
+				<div className='mb-8 sm:mb-10 flex justify-between items-center'>
+					<div>
+						<h1 className='text-2xl font-bold tracking-tight sm:text-3xl'>
+							Posts
+						</h1>
 
-					<p className='mt-2 text-sm leading-6 sm:text-base'>
-						Explore the latest posts.
-					</p>
+						<p className='mt-2 text-sm leading-6 sm:text-base'>
+							Explore the latest posts.
+						</p>
+					</div>
+					{/* Submit button */}
+					<button
+						onClick={() => router.push('/create-post')}
+						className='w-40 cursor-pointer rounded-sm bg-gray-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-gray-800'
+					>
+						Create New Post
+					</button>
 				</div>
 
 				{/* Posts */}
