@@ -1,6 +1,7 @@
 // importing dependencis
 const express = require('express')
 const multer = require('multer')
+const cors = require('cors')
 const uploadFile = require('./services/storage.service')
 const postModel = require('./models/post.model')
 
@@ -9,6 +10,7 @@ const app = express()
 
 // middlewares array
 const middlewares = [
+	cors(), // accept cross-origin requests from trusted origins
 	express.urlencoded({ extended: true }), // accept form-data
 	express.json(), // accept json-data
 ]

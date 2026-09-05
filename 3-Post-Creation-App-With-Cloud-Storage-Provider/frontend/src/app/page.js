@@ -1,8 +1,17 @@
 'use client'
 import React, { useState, useEffect } from 'react'
+import axios from 'axios'
 
 export default function Home() {
 	const [posts, setPosts] = useState([])
+
+  useEffect(() => {
+    axios.get('http://localhost:5000/posts')
+    .then(res => {
+      setPosts(res.data.posts)
+    })
+  }, [])
+  
 
 	return (
 		<main className='min-h-screen px-4 py-8 sm:px-6 sm:py-10 lg:px-8 bg-gray-200'>
