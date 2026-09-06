@@ -1,6 +1,7 @@
 // importing dependencis
 const express = require('express')
 const authRoutes = require('./routes/auth.routes')
+var cookieParser = require('cookie-parser')
 
 // making app
 const app = express()
@@ -9,6 +10,7 @@ const app = express()
 const middlewares = [
 	express.urlencoded({ extended: true }), // accept form-data
 	express.json(), // accept json-data
+	cookieParser(), // parse cookies from incoming requests
 ]
 app.use(middlewares) // using middlewares
 
