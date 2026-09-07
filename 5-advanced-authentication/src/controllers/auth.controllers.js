@@ -50,7 +50,6 @@ async function signupPostController(req, res) {
 			},
 		})
 	} catch (error) {
-		console.log(error)
 		// response back on error
 		return res.status(500).json({ message: 'Server error' })
 	}
@@ -102,7 +101,6 @@ async function signinPostController(req, res) {
 			},
 		})
 	} catch (error) {
-		console.log(error)
 		// response back on error
 		return res.status(500).json({ message: 'Server error' })
 	}

@@ -7,6 +7,7 @@ const {
 
 // signup post api
 router.post('/signup', signupPostController)
+// signin post api
 router.post('/signin', signinPostController)
 
 // exporting router
