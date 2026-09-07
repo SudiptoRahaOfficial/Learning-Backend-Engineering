@@ -2,6 +2,7 @@
 const express = require('express')
 const cookieParser = require('cookie-parser')
 const authRoutes = require('./routes/auth.routes')
+const musicRoutes = require('./routes/music.routes')
 
 // making app
 const app = express()
@@ -14,8 +15,9 @@ const middlewares = [
 ]
 app.use(middlewares) // using middlewares
 
-// connecting authRoutes
+// connecting all API routes
 app.use('/api/auth', authRoutes)
+app.use('/api/music', musicRoutes)
 
 // exporting app
 module.exports = app
