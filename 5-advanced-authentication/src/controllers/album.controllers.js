@@ -39,7 +39,30 @@ async function createPostController(req, res, next) {
 	}
 }
 
+// controller for get all albums route
+async function getAllAlbumsController(req, res) {
+	try {
+		// fetching all albums form db
+		const albums = await albumModel
+			.find()
+			.populate('artist', 'username email')
+			.populate('musics', 'title artist uri')
+
+		// response back on success
+		return res.status(200).json({
+			message: 'Albums fetched successfully',
+			albums,
+		})
+	} catch (error) {
+		// response back on failure
+		res.status(500).json({
+			message: 'Server error',
+		})
+	}
+}
+
 // exporting controllers
 module.exports = {
 	createPostController,
+	getAllAlbumsController,
 }

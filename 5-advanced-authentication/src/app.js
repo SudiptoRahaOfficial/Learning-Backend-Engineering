@@ -18,8 +18,8 @@ app.use(middlewares) // using middlewares
 
 // connecting all API routes
 app.use('/api/auth', authRoutes)
-app.use('/api/music', musicRoutes)
-app.use('/api/album', albumRoutes)
+app.use('/api/musics', musicRoutes)
+app.use('/api/albums', albumRoutes)
 
 // exporting app
 module.exports = app
