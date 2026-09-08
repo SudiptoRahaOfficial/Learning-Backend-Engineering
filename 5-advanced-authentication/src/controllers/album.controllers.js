@@ -45,8 +45,8 @@ async function getAllAlbumsController(req, res) {
 		// fetching all albums form db
 		const albums = await albumModel
 			.find()
+			.select('title artist')
 			.populate('artist', 'username email')
-			.populate('musics', 'title artist uri')
 
 		// response back on success
 		return res.status(200).json({
