@@ -1,0 +1,45 @@
+// importing dependencis
+const albumModel = require('../models/album.model')
+
+// controller for album create post route
+async function createPostController(req, res, next) {
+	// extracting all data sent by client
+	const { title, musics } = req.body
+
+	try {
+		// creating album to db
+		const album = await albumModel.create({
+			title,
+			musics,
+			artist: req.user.id,
+		})
+
+		// response back on success
+		return res.status(201).json({
+			message: 'Album created successfully',
+			album: {
+				id: album._id,
+				title: album.title,
+				artist: album.artist,
+				musics: album.musics,
+			},
+		})
+	} catch (error) {
+		// returning conflict response for duplicate album title
+		if (error.code === 11000 && error.keyPattern?.title) {
+			return res.status(409).json({
+				message: 'Album with this title already exists',
+			})
+		}
+
+		// response back on failure
+		res.status(500).json({
+			message: 'Server error',
+		})
+	}
+}
+
+// exporting controllers
+module.exports = {
+	createPostController,
+}
