@@ -5,7 +5,10 @@ const {
 	authenticateUser,
 	authorizeArtist,
 } = require('../middlewares/auth.middlewares')
-const { uploadPostController } = require('../controllers/music.controllers')
+const {
+	uploadPostController,
+	getAllMusicsController,
+} = require('../controllers/music.controllers')
 
 // music upload post route
 router.post(
@@ -15,6 +18,9 @@ router.post(
 	upload.single('music'),
 	uploadPostController,
 )
+
+// get all musics route
+router.get('/', authenticateUser, getAllMusicsController)
 
 // exporting router
 module.exports = router

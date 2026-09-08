@@ -44,7 +44,29 @@ async function uploadPostController(req, res) {
 	}
 }
 
+// controller for get all musics route
+async function getAllMusicsController(req, res) {
+	try {
+		// fetching all musics form db
+		const musics = await musicModel
+			.find()
+			.populate('artist', 'username email')
+
+		// response back on success
+		return res.status(200).json({
+			message: 'Musics fetched successfully',
+			musics,
+		})
+	} catch (error) {
+		// response back on failure
+		res.status(500).json({
+			message: 'Server error',
+		})
+	}
+}
+
 // exporting controllers
 module.exports = {
 	uploadPostController,
+	getAllMusicsController,
 }
