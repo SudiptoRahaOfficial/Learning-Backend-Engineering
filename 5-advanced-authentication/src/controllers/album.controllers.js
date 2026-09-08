@@ -61,8 +61,34 @@ async function getAllAlbumsController(req, res) {
 	}
 }
 
+// controller for get perticular album route
+async function getAlbumById(req, res) {
+	// extracting id from req.params
+	const id = req.params.id
+
+	try {
+		// finding requested album to db
+		const album = await albumModel
+			.findById(id)
+			.populate('artist', 'username email')
+			.populate('musics')
+
+		// response back on success
+		return res.status(200).json({
+			message: 'Album fetched successfully',
+			album,
+		})
+	} catch (error) {
+		// response back on failure
+		res.status(500).json({
+			message: 'Server error',
+		})
+	}
+}
+
 // exporting controllers
 module.exports = {
 	createPostController,
 	getAllAlbumsController,
+	getAlbumById,
 }
