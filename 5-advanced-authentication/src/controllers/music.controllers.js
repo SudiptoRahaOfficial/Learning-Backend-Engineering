@@ -50,6 +50,8 @@ async function getAllMusicsController(req, res) {
 		// fetching all musics form db
 		const musics = await musicModel
 			.find()
+			.skip(1)
+			.limit(1)
 			.populate('artist', 'username email')
 
 		// response back on success

@@ -106,8 +106,15 @@ async function signinPostController(req, res) {
 	}
 }
 
+// controller for signout post route
+function signoutPostController(req, res) {
+	res.clearCookie('token')
+	res.status(200).json({ message: 'User signed out successfully' })
+}
+
 // exporting controllers
 module.exports = {
 	signupPostController,
 	signinPostController,
+	signoutPostController,
 }
