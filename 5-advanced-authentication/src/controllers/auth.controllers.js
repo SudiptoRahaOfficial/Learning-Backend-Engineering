@@ -36,6 +36,7 @@ async function signupPostController(req, res) {
 				role: user.role,
 			},
 			config.JWT_SECRET,
+			{ expiresIn: '1d' },
 		)
 		// setting token to user's browser cookie
 		res.cookie('token', token)
@@ -87,6 +88,7 @@ async function signinPostController(req, res) {
 				role: user.role,
 			},
 			config.JWT_SECRET,
+			{ expiresIn: '1d' },
 		)
 		// setting token to user's browser cookie
 		res.cookie('token', token)
