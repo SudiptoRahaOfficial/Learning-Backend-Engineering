@@ -29,17 +29,33 @@ async function signupPostController(req, res) {
 			role,
 		})
 
-		// generating token
-		const token = jwt.sign(
+		// generating access token
+		const accessToken = jwt.sign(
 			{
 				id: user._id,
 				role: user.role,
 			},
 			config.JWT_SECRET,
-			{ expiresIn: '1d' },
+			{ expiresIn: '15m' },
 		)
-		// setting token to user's browser cookie
-		res.cookie('token', token)
+
+		// generating refresh token
+		const refreshToken = jwt.sign(
+			{
+				id: user._id,
+				role: user.role,
+			},
+			config.JWT_SECRET,
+			{ expiresIn: '7d' },
+		)
+
+		// setting refreshToken to browser's cookie
+		res.cookie('refreshToken', refreshToken, {
+			httpOnly: true,
+			secure: true,
+			sameSite: 'strict',
+			maxAge: 7 * 24 * 60 * 60 * 1000, // 7 day
+		})
 
 		// response back on success
 		return res.status(201).json({
@@ -50,6 +66,7 @@ async function signupPostController(req, res) {
 				email: user.email,
 				role: user.role,
 			},
+			accessToken,
 		})
 	} catch (error) {
 		// response back on error
@@ -81,17 +98,33 @@ async function signinPostController(req, res) {
 			return res.status(401).json({ message: 'Invalid credentials' })
 		}
 
-		// generating token
-		const token = jwt.sign(
+		// generating access token
+		const accessToken = jwt.sign(
 			{
 				id: user._id,
 				role: user.role,
 			},
 			config.JWT_SECRET,
-			{ expiresIn: '1d' },
+			{ expiresIn: '15m' },
 		)
-		// setting token to user's browser cookie
-		res.cookie('token', token)
+
+		// generating refresh token
+		const refreshToken = jwt.sign(
+			{
+				id: user._id,
+				role: user.role,
+			},
+			config.JWT_SECRET,
+			{ expiresIn: '7d' },
+		)
+
+		// setting refreshToken to browser's cookie
+		res.cookie('refreshToken', refreshToken, {
+			httpOnly: true,
+			secure: true,
+			sameSite: 'strict',
+			maxAge: 7 * 24 * 60 * 60 * 1000, // 7 day
+		})
 
 		// response back on success
 		return res.status(200).json({
@@ -102,6 +135,7 @@ async function signinPostController(req, res) {
 				email: user.email,
 				role: user.role,
 			},
+			accessToken,
 		})
 	} catch (error) {
 		// response back on error
@@ -111,8 +145,77 @@ async function signinPostController(req, res) {
 
 // controller for signout post route
 function signoutPostController(req, res) {
-	res.clearCookie('token')
+	res.clearCookie('refreshToken')
 	res.status(200).json({ message: 'User signed out successfully' })
+}
+
+// controller for refresh-token post route
+async function refreshTokenPostController(req, res) {
+	// extracting refreshToken form cookies
+	const refreshToken = req.cookies.refreshToken
+
+	// returning response with error if token not found
+	if (!refreshToken) {
+		return res.status(401).json({
+			message: 'Unauthenticated user',
+		})
+	}
+
+	try {
+		// verifying token
+		const decoded = jwt.verify(refreshToken, config.JWT_SECRET)
+
+		// extracting user id from verified token
+		const { id } = decoded
+
+		// returning response with error if user id missing
+		if (!id) {
+			return res.status(401).json({
+				message: 'Invalid refresh token',
+			})
+		}
+
+		// checking for the user to db
+		const user = await userModel.findById(id)
+
+		// returning response with error if user not found
+		if (!user) {
+			return res.status(401).json({
+				message: 'Unauthenticated user',
+			})
+		}
+
+		// generating a new access token
+		const accessToken = jwt.sign(
+			{ id: user._id, role: user.role },
+			config.JWT_SECRET,
+			{ expiresIn: '15m' },
+		)
+
+		// generating a new refresh token
+		const newRefreshToken = jwt.sign(
+			{ id: user._id, role: user.role },
+			config.JWT_SECRET,
+			{ expiresIn: '7d' },
+		)
+
+		// setting refreshToken to browser's cookie
+		res.cookie('refreshToken', newRefreshToken, {
+			httpOnly: true,
+			secure: true,
+			sameSite: 'strict',
+			maxAge: 7 * 24 * 60 * 60 * 1000, // 7 day
+		})
+
+		// response back with newly generated access token
+		return res.status(200).json({
+			message: 'Access token refreshed successfully',
+			accessToken,
+		})
+	} catch (error) {
+		// returning response with error if token got invalid
+		return res.status(401).json({ message: 'Unauthenticated user' })
+	}
 }
 
 // exporting controllers
@@ -120,4 +223,5 @@ module.exports = {
 	signupPostController,
 	signinPostController,
 	signoutPostController,
+	refreshTokenPostController,
 }

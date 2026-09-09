@@ -4,6 +4,7 @@ const {
 	signupPostController,
 	signinPostController,
 	signoutPostController,
+	refreshTokenPostController,
 } = require('../controllers/auth.controllers')
 
 // signup post api
@@ -14,6 +15,9 @@ router.post('/signin', signinPostController)
 
 // signout post api
 router.post('/signout', signoutPostController)
+
+// refresh-token get api
+router.post('/refresh-token', refreshTokenPostController)
 
 // exporting router
 module.exports = router
