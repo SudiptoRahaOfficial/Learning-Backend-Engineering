@@ -1,11 +1,9 @@
-// importing & configuring dotenv
-require('dotenv').config()
-
 // importing dependencis
 const app = require('./src/app')
+const config = require('./src/config/config')
 const connectDB = require('./src/db/connectDB')
 
-const port = process.env.PORT || 3000 // defining port
+const port = config.PORT // defining port
 
 // connecting server with database
 connectDB()

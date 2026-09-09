@@ -1,13 +1,11 @@
 // importing dependencis
 const { connect } = require('mongoose')
-
-// db connection uri
-const dbConnectionUri = process.env.DB_CONNECTION_URI
+const config = require('../config/config')
 
 // function for db connection
 async function connectDB() {
 	try {
-		await connect(dbConnectionUri)
+		await connect(config.DB_CONNECTION_URI)
 		console.log('Database connected successfully!')
 	} catch (error) {
 		console.log('Failed to connect database!')

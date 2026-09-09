@@ -1,5 +1,6 @@
 // importing dependencis
 const jwt = require('jsonwebtoken')
+const config = require('../config/config')
 
 // middleware for authenticate user
 function authenticateUser(req, res, next) {
@@ -13,7 +14,7 @@ function authenticateUser(req, res, next) {
 
 	try {
 		// verifying token and extracting authenticated user data
-		const decoded = jwt.verify(token, process.env.JWT_SECRET)
+		const decoded = jwt.verify(token, config.JWT_SECRET)
 
 		// attaching authenticated user data to request
 		req.user = {

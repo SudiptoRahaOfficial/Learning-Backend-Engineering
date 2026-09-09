@@ -1,6 +1,7 @@
 // importing dependencis
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const config = require('../config/config')
 const userModel = require('../models/user.model')
 
 // controller for signup post route
@@ -34,7 +35,7 @@ async function signupPostController(req, res) {
 				id: user._id,
 				role: user.role,
 			},
-			process.env.JWT_SECRET,
+			config.JWT_SECRET,
 		)
 		// setting token to user's browser cookie
 		res.cookie('token', token)
@@ -85,7 +86,7 @@ async function signinPostController(req, res) {
 				id: user._id,
 				role: user.role,
 			},
-			process.env.JWT_SECRET,
+			config.JWT_SECRET,
 		)
 		// setting token to user's browser cookie
 		res.cookie('token', token)

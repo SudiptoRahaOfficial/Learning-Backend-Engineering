@@ -1,9 +1,10 @@
 // importing dependencis
 const ImageKit = require('@imagekit/nodejs')
+const config = require('../config/config')
 
 // client account private key setup
 const client = new ImageKit({
-	privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
+	privateKey: config.IMAGEKIT_PRIVATE_KEY,
 })
 
 // function for uploading file to imagekit
