@@ -7,20 +7,20 @@ const userSchema = new Schema(
 		username: {
 			type: String,
 			trim: true,
-			required: true,
-			unique: true,
-			maxlength: 15,
+			required: [true, 'Username is required'],
+			unique: [true, 'Username must be unique'],
+			maxlength: [15, "Username can't larger than 15 characters"],
 		},
 		email: {
 			type: String,
 			trim: true,
-			required: true,
-			unique: true,
+			required: [true, 'Email is required'],
+			unique: [true, 'Email must be unique'],
 		},
 		password: {
 			type: String,
-			required: true,
-			minlength: 6,
+			required: [true, 'Password is required'],
+			minlength: [6, "Password can't be smaller than 6 characters"],
 		},
 		role: {
 			type: String,

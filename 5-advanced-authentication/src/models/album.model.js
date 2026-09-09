@@ -6,8 +6,8 @@ const albumSchema = new Schema(
 	{
 		title: {
 			type: String,
-			required: true,
-			unique: true,
+			required: [true, 'Album title is required'],
+			unique: [true, 'Album already exists with the same title'],
 		},
 		musics: [
 			{
@@ -18,7 +18,7 @@ const albumSchema = new Schema(
 		artist: {
 			type: Schema.Types.ObjectId,
 			ref: 'user',
-			required: true,
+			required: [true, 'Artist is required'],
 		},
 	},
 	{ timestamps: true },
