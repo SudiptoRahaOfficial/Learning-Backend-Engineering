@@ -157,9 +157,49 @@ async function signinPostController(req, res) {
 }
 
 // controller for signout post route
-function signoutPostController(req, res) {
-	res.clearCookie('refreshToken')
-	res.status(200).json({ message: 'User signed out successfully' })
+async function signoutPostController(req, res) {
+	// extracting refresh token
+	const refreshToken = req.cookies.refreshToken
+
+	// returning response with error if refresh token not found
+	if (!refreshToken) {
+		return res.status(400).json({
+			message: 'Refresh token not found',
+		})
+	}
+
+	try {
+		// encrypting refresh token
+		const hashedRefreshToken = await bcrypt.hash(refreshToken, 10)
+
+		// finding session to db according refresh token
+		const session = await sessionModel.findOne({
+			refreshTokenHash: hashedRefreshToken,
+			revoked: false,
+		})
+
+		// returning response with error if session not found
+		if (!session) {
+			return res.status(400).json({
+				message: 'Invalid refresh token',
+			})
+		}
+
+		// setting revoked: true & updating db if session found
+		session.revoked = true
+		await session.save()
+
+		// clearing refreshToken from browser's cookies
+		res.clearCookie('refreshToken')
+
+		// response back on success
+		res.status(200).json({
+			message: 'User signed out successfully',
+		})
+	} catch (error) {
+		// response back on error
+		return res.status(500).json({ message: 'Server error' })
+	}
 }
 
 // controller for refresh-token post route
