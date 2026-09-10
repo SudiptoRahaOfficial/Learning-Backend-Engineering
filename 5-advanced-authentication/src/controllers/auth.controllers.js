@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const config = require('../config/config')
 const userModel = require('../models/user.model')
+const sessionModel = require('../models/session.model')
 
 // controller for signup post route
 async function signupPostController(req, res) {
@@ -18,7 +19,7 @@ async function signupPostController(req, res) {
 			return res.status(409).json({ message: 'User already exists' })
 		}
 
-		// encripting password
+		// encrypting password
 		const hashedPassword = await bcrypt.hash(password, 10)
 
 		// creating new user to db
@@ -28,16 +29,6 @@ async function signupPostController(req, res) {
 			password: hashedPassword,
 			role,
 		})
-
-		// generating access token
-		const accessToken = jwt.sign(
-			{
-				id: user._id,
-				role: user.role,
-			},
-			config.JWT_SECRET,
-			{ expiresIn: '15m' },
-		)
 
 		// generating refresh token
 		const refreshToken = jwt.sign(
@@ -56,6 +47,28 @@ async function signupPostController(req, res) {
 			sameSite: 'strict',
 			maxAge: 7 * 24 * 60 * 60 * 1000, // 7 day
 		})
+
+		// encrypting refresh token
+		const hashedRefreshToken = await bcrypt.hash(refreshToken, 10)
+
+		// creating session to db
+		const session = await sessionModel.create({
+			user: user._id,
+			refreshTokenHash: hashedRefreshToken,
+			ip: req.ip,
+			userAgent: req.headers['user-agent'],
+		})
+
+		// generating access token
+		const accessToken = jwt.sign(
+			{
+				id: user._id,
+				role: user.role,
+				sessionId: session._id,
+			},
+			config.JWT_SECRET,
+			{ expiresIn: '15m' },
+		)
 
 		// response back on success
 		return res.status(201).json({
