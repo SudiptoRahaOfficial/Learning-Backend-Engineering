@@ -4,6 +4,7 @@ const {
 	signupPostController,
 	signinPostController,
 	signoutPostController,
+	signoutAllPostController,
 	refreshTokenPostController,
 } = require('../controllers/auth.controllers')
 
@@ -15,6 +16,9 @@ router.post('/signin', signinPostController)
 
 // signout post api
 router.post('/signout', signoutPostController)
+
+// signout all post api
+router.post('/signout-all', signoutAllPostController)
 
 // refresh-token get api
 router.post('/refresh-token', refreshTokenPostController)

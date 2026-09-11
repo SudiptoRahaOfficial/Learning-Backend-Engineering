@@ -203,7 +203,7 @@ async function signoutPostController(req, res) {
 		// verifying refresh token
 		const decoded = jwt.verify(refreshToken, config.JWT_SECRET)
 
-		// extracting user id and session id
+		// extracting user id, user role and session id
 		const { id, role, sessionId } = decoded
 
 		// returning response with error if required data missing
@@ -279,6 +279,100 @@ async function signoutPostController(req, res) {
 	}
 }
 
+// controller for signout all post route
+async function signoutAllPostController(req, res) {
+	// extracting refresh token
+	const refreshToken = req.cookies.refreshToken
+
+	// returning response with error if refresh token not found
+	if (!refreshToken) {
+		return res.status(401).json({
+			message: 'Unauthenticated user',
+		})
+	}
+
+	try {
+		// verifying refresh token
+		const decoded = jwt.verify(refreshToken, config.JWT_SECRET)
+
+		// extracting user id and session id
+		const { id, sessionId } = decoded
+
+		// returning response with error if required token data missing
+		if (!id || !sessionId) {
+			return res.status(401).json({
+				message: 'Invalid refresh token',
+			})
+		}
+
+		// finding active session belonging to authenticated user
+		const session = await sessionModel.findOne({
+			_id: sessionId,
+			user: id,
+			revoked: false,
+		})
+
+		// returning response with error if session not found
+		if (!session) {
+			return res.status(401).json({
+				message: 'Invalid refresh token',
+			})
+		}
+
+		// checking refresh token against stored session hash
+		const isRefreshTokenValid = await bcrypt.compare(
+			refreshToken,
+			session.refreshTokenHash,
+		)
+
+		// returning response with error if refresh token is invalid
+		if (!isRefreshTokenValid) {
+			return res.status(401).json({
+				message: 'Invalid refresh token',
+			})
+		}
+
+		// revoking all active sessions belonging to the authenticated user
+		await sessionModel.updateMany(
+			{ user: id, revoked: false },
+			{ revoked: true },
+		)
+
+		// clearing refreshToken from browser's cookies
+		res.clearCookie('refreshToken', {
+			httpOnly: true,
+			secure: true,
+			sameSite: 'strict',
+		})
+
+		// response back on success
+		return res.status(200).json({
+			message: 'Signed out from all devices successfully',
+		})
+	} catch (error) {
+		// returning response if refresh token verification fails
+		if (
+			error.name === 'JsonWebTokenError' ||
+			error.name === 'TokenExpiredError'
+		) {
+			res.clearCookie('refreshToken', {
+				httpOnly: true,
+				secure: true,
+				sameSite: 'strict',
+			})
+
+			return res.status(401).json({
+				message: 'Invalid refresh token',
+			})
+		}
+
+		// returning response for unexpected server errors
+		return res.status(500).json({
+			message: 'Server error',
+		})
+	}
+}
+
 // controller for refresh-token post route
 async function refreshTokenPostController(req, res) {
 	// extracting refreshToken from cookies
@@ -295,7 +389,7 @@ async function refreshTokenPostController(req, res) {
 		// verifying refresh token
 		const decoded = jwt.verify(refreshToken, config.JWT_SECRET)
 
-		// extracting user id and session id from verified token
+		// extracting user id, user role and session id from verified token
 		const { id, role, sessionId } = decoded
 
 		// returning response with error if required token data missing
@@ -411,5 +505,6 @@ module.exports = {
 	signupPostController,
 	signinPostController,
 	signoutPostController,
+	signoutAllPostController,
 	refreshTokenPostController,
 }
