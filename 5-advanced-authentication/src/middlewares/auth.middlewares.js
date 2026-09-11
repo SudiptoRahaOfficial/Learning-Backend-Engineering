@@ -1,9 +1,10 @@
 // importing dependencis
 const jwt = require('jsonwebtoken')
 const config = require('../config/config')
+const sessionModel = require('../models/session.model')
 
 // middleware for authenticate user
-function authenticateUser(req, res, next) {
+async function authenticateUser(req, res, next) {
 	// extracting authorization header from request
 	const authorization = req.headers.authorization
 
@@ -21,11 +22,32 @@ function authenticateUser(req, res, next) {
 		// verifying accessToken and extracting authenticated user data
 		const decoded = jwt.verify(accessToken, config.JWT_SECRET)
 
-		// attaching authenticated user data to request
-		req.user = {
-			id: decoded.id,
-			role: decoded.role,
+		// extracting user id and session id
+		const { id, role, sessionId } = decoded
+
+		// returning response with error if required data missing
+		if (!id || !role || !sessionId) {
+			return res.status(401).json({
+				message: 'Invalid access token',
+			})
 		}
+
+		// finding active session belonging to authenticated user
+		const session = await sessionModel.findOne({
+			_id: sessionId,
+			user: id,
+			revoked: false,
+		})
+
+		// returning response with error if session not found
+		if (!session) {
+			return res.status(401).json({
+				message: 'Invalid access token',
+			})
+		}
+
+		// attaching authenticated user data to request
+		req.user = { id, role, sessionId }
 
 		// passing request on success path
 		next()
