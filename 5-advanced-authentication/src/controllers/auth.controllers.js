@@ -4,7 +4,12 @@ const jwt = require('jsonwebtoken')
 const config = require('../config/config')
 const userModel = require('../models/user.model')
 const sessionModel = require('../models/session.model')
+const otpModel = require('../models/otp.model')
 const sendEmail = require('../services/email.service')
+const {
+	generateSecureOTP,
+	generateEmailBodyHtml,
+} = require('../utils/auth.utils')
 
 // controller for signup post route
 async function signupPostController(req, res) {
@@ -34,60 +39,36 @@ async function signupPostController(req, res) {
 			role,
 		})
 
-		// // creating an empty session to generate a unique session id
-		// const session = await sessionModel.create({
-		// 	user: user._id,
-		// 	ip: req.ip,
-		// 	userAgent: req.headers['user-agent'],
-		// })
+		// generating otp & otp email body html
+		const otp = generateSecureOTP()
+		const emailBodyHtml = generateEmailBodyHtml(otp)
 
-		// // generating refresh token
-		// const refreshToken = jwt.sign(
-		// 	{
-		// 		id: user._id,
-		// 		role: user.role,
-		// 		sessionId: session._id,
-		// 	},
-		// 	config.JWT_SECRET,
-		// 	{ expiresIn: '7d' },
-		// )
+		// encrypting otp & creating new otp obj to db with hashedOtp
+		const hashedOtp = await bcrypt.hash(otp, 10)
+		await otpModel.create({
+			email,
+			user: user._id,
+			hashedOtp,
+		})
 
-		// // setting refreshToken to browser's cookie
-		// res.cookie('refreshToken', refreshToken, {
-		// 	httpOnly: true,
-		// 	secure: true,
-		// 	sameSite: 'strict',
-		// 	maxAge: 7 * 24 * 60 * 60 * 1000, // 7 day
-		// })
-
-		// // hashing refresh token for secure session storage
-		// const hashedRefreshToken = await bcrypt.hash(refreshToken, 10)
-
-		// // storing refresh token hash in session & saving to db
-		// session.refreshTokenHash = hashedRefreshToken
-		// await session.save()
-
-		// // generating access token
-		// const accessToken = jwt.sign(
-		// 	{
-		// 		id: user._id,
-		// 		role: user.role,
-		// 		sessionId: session._id,
-		// 	},
-		// 	config.JWT_SECRET,
-		// 	{ expiresIn: '15m' },
-		// )
+		// sending email for OTP verification to provided email address by user
+		await sendEmail(
+			email,
+			'OTP verification',
+			`Your OTP code is ${otp}`,
+			emailBodyHtml,
+		)
 
 		// response back on success
 		return res.status(201).json({
-			message: 'User created successfully',
+			message: 'User signed up successfully',
 			user: {
 				id: user._id,
 				username: user.username,
 				email: user.email,
 				role: user.role,
+				verified: user.verified,
 			},
-			accessToken,
 		})
 	} catch (error) {
 		// response back on error
