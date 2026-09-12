@@ -17,7 +17,7 @@ async function signupPostController(req, res) {
 	const { username, email, password, role } = req.body
 
 	try {
-		// throwing error on duplicate username/email
+		// returning response with error on duplicate username/email
 		const isUserAlreadyExists = await userModel.findOne({
 			$or: [{ username }, { email }],
 		})
@@ -89,66 +89,73 @@ async function signinPostController(req, res) {
 			$or: [{ username }, { email }],
 		})
 
-		// throwing error if user not found by username/email both
+		// returning response with error if user not found by username/email both
 		if (!user) {
 			return res.status(401).json({
 				message: 'Invalid credentials',
 			})
 		}
 
+		// returning response with error if email not verified
+		if (!user.verified) {
+			return res.status(401).json({
+				message: 'Email not verified',
+			})
+		}
+
 		// checking is provided password valid/invalid
 		const isPasswordValid = await bcrypt.compare(password, user.password)
 
-		// throwing error if password got invalid
+		// returning response with error if password got invalid
 		if (!isPasswordValid) {
 			return res.status(401).json({
 				message: 'Invalid credentials',
 			})
 		}
 
-		// // creating an empty session to generate a unique session id
-		// const session = await sessionModel.create({
-		// 	user: user._id,
-		// 	ip: req.ip,
-		// 	userAgent: req.headers['user-agent'],
-		// })
+		// creating an empty session to generate a unique session id
+		const session = await sessionModel.create({
+			user: user._id,
+			ip: req.ip,
+			userAgent: req.headers['user-agent'],
+		})
 
-		// // generating refresh token
-		// const refreshToken = jwt.sign(
-		// 	{
-		// 		id: user._id,
-		// 		role: user.role,
-		// 		sessionId: session._id,
-		// 	},
-		// 	config.JWT_SECRET,
-		// 	{ expiresIn: '7d' },
-		// )
+		// generating refresh token
+		const refreshToken = jwt.sign(
+			{
+				id: user._id,
+				role: user.role,
+				sessionId: session._id,
+			},
+			config.JWT_SECRET,
+			{ expiresIn: '7d' },
+		)
 
-		// // setting refreshToken to browser's cookie
-		// res.cookie('refreshToken', refreshToken, {
-		// 	httpOnly: true,
-		// 	secure: true,
-		// 	sameSite: 'strict',
-		// 	maxAge: 7 * 24 * 60 * 60 * 1000, // 7 day
-		// })
+		// setting refreshToken to browser's cookie
+		res.cookie('refreshToken', refreshToken, {
+			httpOnly: true,
+			secure: true,
+			sameSite: 'strict',
+			maxAge: 7 * 24 * 60 * 60 * 1000, // 7 day
+		})
 
-		// // hashing refresh token for secure session storage
-		// const hashedRefreshToken = await bcrypt.hash(refreshToken, 10)
+		// hashing refresh token for secure session storage
+		const hashedRefreshToken = await bcrypt.hash(refreshToken, 10)
 
-		// // storing refresh token hash in session & saving to db
-		// session.refreshTokenHash = hashedRefreshToken
-		// await session.save()
+		// storing refresh token hash in session & saving to db
+		session.refreshTokenHash = hashedRefreshToken
+		await session.save()
 
-		// // generating access token
-		// const accessToken = jwt.sign(
-		// 	{
-		// 		id: user._id,
-		// 		role: user.role,
-		// 		sessionId: session._id,
-		// 	},
-		// 	config.JWT_SECRET,
-		// 	{ expiresIn: '15m' },
-		// )
+		// generating access token
+		const accessToken = jwt.sign(
+			{
+				id: user._id,
+				role: user.role,
+				sessionId: session._id,
+			},
+			config.JWT_SECRET,
+			{ expiresIn: '15m' },
+		)
 
 		// response back on success
 		return res.status(200).json({
