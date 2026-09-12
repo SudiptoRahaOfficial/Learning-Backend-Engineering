@@ -362,6 +362,90 @@ async function signoutAllPostController(req, res) {
 	}
 }
 
+// controller for verify-email post route
+async function verifyEmailPostController(req, res) {
+	// extracting all data sent by client
+	const { otp, email } = req.body
+
+	// validating required fields
+	if (!otp || !email) {
+		return res.status(400).json({
+			message: 'Email and OTP are required',
+		})
+	}
+
+	// normalizing email
+	const normalizedEmail = email.trim().toLowerCase()
+
+	// validating email format
+	if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+		return res.status(400).json({
+			message: 'Invalid email address',
+		})
+	}
+
+	// validating OTP format
+	if (!/^\d{6}$/.test(otp)) {
+		return res.status(400).json({
+			message: 'Invalid OTP format',
+		})
+	}
+
+	try {
+		// finding otp document to db by provided email
+		const otpDoc = await otpModel.findOne({ email: normalizedEmail })
+
+		// returning response with error if otp document not found at db
+		if (!otpDoc) {
+			return res.status(400).json({
+				message: 'Invalid or expired OTP',
+			})
+		}
+
+		// securely comparing provided OTP with stored OTP
+		const isOtpValid = await bcrypt.compare(otp, otpDoc.otpHash)
+
+		// returning response with error if OTP is incorrect
+		if (!isOtpValid) {
+			return res.status(400).json({
+				message: 'Invalid or expired OTP',
+			})
+		}
+
+		// updating verified status true at user document if OTP verified
+		const user = await userModel.findOneAndUpdate(
+			{ _id: otpDoc.user },
+			{ $set: { verified: true } },
+			{ new: true },
+		)
+
+		// returning response with error if user does not exist
+		if (!user) {
+			return res.status(404).json({
+				message: 'User not found',
+			})
+		}
+
+		// deleting all OTPs belonging to the user
+		await otpModel.deleteMany({ user: otpDoc.user })
+
+		// returning response on success
+		return res.status(200).json({
+			message: 'Email verified successfully',
+			user: {
+				username: user.username,
+				email: user.email,
+				verified: user.verified,
+			},
+		})
+	} catch (error) {
+		// returning response for unexpected server errors
+		return res.status(500).json({
+			message: 'Server error',
+		})
+	}
+}
+
 // controller for refresh-token post route
 async function refreshTokenPostController(req, res) {
 	// extracting refreshToken from cookies
@@ -495,5 +579,6 @@ module.exports = {
 	signinPostController,
 	signoutPostController,
 	signoutAllPostController,
+	verifyEmailPostController,
 	refreshTokenPostController,
 }
