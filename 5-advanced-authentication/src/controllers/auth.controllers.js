@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken')
 const config = require('../config/config')
 const userModel = require('../models/user.model')
 const sessionModel = require('../models/session.model')
+const sendEmail = require('../services/email.service')
 
 // controller for signup post route
 async function signupPostController(req, res) {
@@ -33,49 +34,49 @@ async function signupPostController(req, res) {
 			role,
 		})
 
-		// creating an empty session to generate a unique session id
-		const session = await sessionModel.create({
-			user: user._id,
-			ip: req.ip,
-			userAgent: req.headers['user-agent'],
-		})
+		// // creating an empty session to generate a unique session id
+		// const session = await sessionModel.create({
+		// 	user: user._id,
+		// 	ip: req.ip,
+		// 	userAgent: req.headers['user-agent'],
+		// })
 
-		// generating refresh token
-		const refreshToken = jwt.sign(
-			{
-				id: user._id,
-				role: user.role,
-				sessionId: session._id,
-			},
-			config.JWT_SECRET,
-			{ expiresIn: '7d' },
-		)
+		// // generating refresh token
+		// const refreshToken = jwt.sign(
+		// 	{
+		// 		id: user._id,
+		// 		role: user.role,
+		// 		sessionId: session._id,
+		// 	},
+		// 	config.JWT_SECRET,
+		// 	{ expiresIn: '7d' },
+		// )
 
-		// setting refreshToken to browser's cookie
-		res.cookie('refreshToken', refreshToken, {
-			httpOnly: true,
-			secure: true,
-			sameSite: 'strict',
-			maxAge: 7 * 24 * 60 * 60 * 1000, // 7 day
-		})
+		// // setting refreshToken to browser's cookie
+		// res.cookie('refreshToken', refreshToken, {
+		// 	httpOnly: true,
+		// 	secure: true,
+		// 	sameSite: 'strict',
+		// 	maxAge: 7 * 24 * 60 * 60 * 1000, // 7 day
+		// })
 
-		// hashing refresh token for secure session storage
-		const hashedRefreshToken = await bcrypt.hash(refreshToken, 10)
+		// // hashing refresh token for secure session storage
+		// const hashedRefreshToken = await bcrypt.hash(refreshToken, 10)
 
-		// storing refresh token hash in session & saving to db
-		session.refreshTokenHash = hashedRefreshToken
-		await session.save()
+		// // storing refresh token hash in session & saving to db
+		// session.refreshTokenHash = hashedRefreshToken
+		// await session.save()
 
-		// generating access token
-		const accessToken = jwt.sign(
-			{
-				id: user._id,
-				role: user.role,
-				sessionId: session._id,
-			},
-			config.JWT_SECRET,
-			{ expiresIn: '15m' },
-		)
+		// // generating access token
+		// const accessToken = jwt.sign(
+		// 	{
+		// 		id: user._id,
+		// 		role: user.role,
+		// 		sessionId: session._id,
+		// 	},
+		// 	config.JWT_SECRET,
+		// 	{ expiresIn: '15m' },
+		// )
 
 		// response back on success
 		return res.status(201).json({
@@ -124,49 +125,49 @@ async function signinPostController(req, res) {
 			})
 		}
 
-		// creating an empty session to generate a unique session id
-		const session = await sessionModel.create({
-			user: user._id,
-			ip: req.ip,
-			userAgent: req.headers['user-agent'],
-		})
+		// // creating an empty session to generate a unique session id
+		// const session = await sessionModel.create({
+		// 	user: user._id,
+		// 	ip: req.ip,
+		// 	userAgent: req.headers['user-agent'],
+		// })
 
-		// generating refresh token
-		const refreshToken = jwt.sign(
-			{
-				id: user._id,
-				role: user.role,
-				sessionId: session._id,
-			},
-			config.JWT_SECRET,
-			{ expiresIn: '7d' },
-		)
+		// // generating refresh token
+		// const refreshToken = jwt.sign(
+		// 	{
+		// 		id: user._id,
+		// 		role: user.role,
+		// 		sessionId: session._id,
+		// 	},
+		// 	config.JWT_SECRET,
+		// 	{ expiresIn: '7d' },
+		// )
 
-		// setting refreshToken to browser's cookie
-		res.cookie('refreshToken', refreshToken, {
-			httpOnly: true,
-			secure: true,
-			sameSite: 'strict',
-			maxAge: 7 * 24 * 60 * 60 * 1000, // 7 day
-		})
+		// // setting refreshToken to browser's cookie
+		// res.cookie('refreshToken', refreshToken, {
+		// 	httpOnly: true,
+		// 	secure: true,
+		// 	sameSite: 'strict',
+		// 	maxAge: 7 * 24 * 60 * 60 * 1000, // 7 day
+		// })
 
-		// hashing refresh token for secure session storage
-		const hashedRefreshToken = await bcrypt.hash(refreshToken, 10)
+		// // hashing refresh token for secure session storage
+		// const hashedRefreshToken = await bcrypt.hash(refreshToken, 10)
 
-		// storing refresh token hash in session & saving to db
-		session.refreshTokenHash = hashedRefreshToken
-		await session.save()
+		// // storing refresh token hash in session & saving to db
+		// session.refreshTokenHash = hashedRefreshToken
+		// await session.save()
 
-		// generating access token
-		const accessToken = jwt.sign(
-			{
-				id: user._id,
-				role: user.role,
-				sessionId: session._id,
-			},
-			config.JWT_SECRET,
-			{ expiresIn: '15m' },
-		)
+		// // generating access token
+		// const accessToken = jwt.sign(
+		// 	{
+		// 		id: user._id,
+		// 		role: user.role,
+		// 		sessionId: session._id,
+		// 	},
+		// 	config.JWT_SECRET,
+		// 	{ expiresIn: '15m' },
+		// )
 
 		// response back on success
 		return res.status(200).json({
