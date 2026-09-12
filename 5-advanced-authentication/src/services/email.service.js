@@ -1,6 +1,7 @@
 const nodemailer = require('nodemailer')
 const config = require('../config/config')
 
+// configuring transporter
 const transporter = nodemailer.createTransport({
 	service: 'gmail',
 	auth: {
@@ -21,4 +22,23 @@ transporter.verify((error, success) => {
 	}
 })
 
-module.exports = transporter
+// Function to send email
+const sendEmail = async (to, subject, text, html) => {
+	try {
+		const info = await transporter.sendMail({
+			from: `"Advanced Authentication" <${config.GOOGLE_USER}>`, // sender address
+			to, // list of receivers
+			subject, // Subject line
+			text, // plain text body
+			html, // html body
+		})
+
+		console.log('Message sent: %s', info.messageId)
+		console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info))
+	} catch (error) {
+		console.error('Error sending email:', error)
+	}
+}
+
+// exporting sendEmail function
+module.exports = sendEmail
