@@ -27,6 +27,10 @@ const userSchema = new Schema(
 			enum: ['user', 'artist'],
 			default: 'user',
 		},
+		verified: {
+			type: Boolean,
+			default: false,
+		},
 	},
 	{ timestamps: true },
 )
