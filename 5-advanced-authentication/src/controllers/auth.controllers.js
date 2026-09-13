@@ -21,10 +21,13 @@ async function signupPostController(req, res) {
 	// extracting all data sent by client
 	const { username, email, password, role } = req.body
 
+	// normalizing email
+	const normalizedEmail = email.trim().toLowerCase()
+
 	try {
 		// returning response with error on duplicate username/email
 		const isUserAlreadyExists = await userModel.findOne({
-			$or: [{ username }, { email }],
+			$or: [{ username }, { email: normalizedEmail }],
 		})
 
 		if (isUserAlreadyExists) {
@@ -39,7 +42,7 @@ async function signupPostController(req, res) {
 		// creating new user to db
 		const user = await userModel.create({
 			username,
-			email,
+			email: normalizedEmail,
 			password: hashedPassword,
 			role,
 		})
@@ -51,9 +54,10 @@ async function signupPostController(req, res) {
 		// encrypting otp & creating new otp obj to db with hashedOtp
 		const hashedOtp = await bcrypt.hash(otp, 10)
 		await otpModel.create({
-			email,
+			email: normalizedEmail,
 			user: user._id,
 			otpHash: hashedOtp,
+			expiresAt: new Date(Date.now() + 1 * 60 * 1000),
 		})
 
 		// sending email for OTP verification to provided email address by user
@@ -65,8 +69,8 @@ async function signupPostController(req, res) {
 		)
 
 		// response back on success
-		return res.status(201).json({
-			message: 'User signed up successfully',
+		return res.status(202).json({
+			message: 'Signup successful! Please verify your email.',
 			user: {
 				id: user._id,
 				username: user.username,
@@ -76,6 +80,12 @@ async function signupPostController(req, res) {
 			},
 		})
 	} catch (error) {
+		if (error.code === 11000) {
+			return res.status(409).json({
+				message: 'Username or email already exists',
+			})
+		}
+
 		// response back on error
 		return res.status(500).json({
 			message: 'Server error',
@@ -398,7 +408,10 @@ async function verifyEmailPostController(req, res) {
 
 	try {
 		// finding otp document to db by provided email
-		const otpDoc = await otpModel.findOne({ email: normalizedEmail })
+		const otpDoc = await otpModel.findOne({
+			email: normalizedEmail,
+			expiresAt: { $gt: new Date() },
+		})
 
 		// returning response with error if otp document not found at db
 		if (!otpDoc) {
@@ -512,6 +525,7 @@ async function resendVerifyEmailPostController(req, res) {
 			email: normalizedEmail,
 			user: user._id,
 			otpHash: hashedOtp,
+			expiresAt: new Date(Date.now() + 1 * 60 * 1000),
 		})
 
 		try {

@@ -22,6 +22,11 @@ const otpSchema = new Schema(
 			type: String,
 			required: [true, 'OTP hash is required'],
 		},
+		expiresAt: {
+			type: Date,
+			required: [true, 'OTP expiration time is required'],
+			expires: 0,
+		},
 	},
 	{ timestamps: true },
 )

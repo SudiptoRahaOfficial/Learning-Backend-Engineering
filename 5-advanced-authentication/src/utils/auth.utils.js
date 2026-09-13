@@ -133,7 +133,7 @@ function generateEmailBodyHtml(otp) {
 								color: #6b7280;
 								text-align: center;
 							">
-								This verification code will expire in <strong>10 minutes</strong>.
+								This verification code will expire in <strong>1 minutes</strong>.
 							</p>
 
 							<!-- Security notice -->
