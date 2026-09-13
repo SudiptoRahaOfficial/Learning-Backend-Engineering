@@ -14,10 +14,7 @@ const sessionSchema = new Schema(
 			ref: 'user',
 			required: [true, 'User is required'],
 		},
-		refreshTokenHash: {
-			type: String,
-			required: [true, 'Refresh token hash is required'],
-		},
+		refreshTokenHash: String,
 		ip: {
 			type: String,
 			required: [true, 'IP address is required'],
