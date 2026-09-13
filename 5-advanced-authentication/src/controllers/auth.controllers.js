@@ -722,16 +722,18 @@ async function refreshTokenPostController(req, res) {
 		})
 	} catch (error) {
 		// returning response if refresh token verification fails
-		if (error.name === 'JsonWebTokenError') {
+		if (
+			error.name === 'JsonWebTokenError' ||
+			error.name === 'TokenExpiredError'
+		) {
+			res.clearCookie('refreshToken', {
+				httpOnly: true,
+				secure: true,
+				sameSite: 'strict',
+			})
+
 			return res.status(401).json({
 				message: 'Invalid refresh token',
-			})
-		}
-
-		// returning response if refresh token has expired
-		if (error.name === 'TokenExpiredError') {
-			return res.status(401).json({
-				message: 'Refresh token expired',
 			})
 		}
 
