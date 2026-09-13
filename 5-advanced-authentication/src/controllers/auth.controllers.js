@@ -53,7 +53,7 @@ async function signupPostController(req, res) {
 		await otpModel.create({
 			email,
 			user: user._id,
-			hashedOtp,
+			otpHash: hashedOtp,
 		})
 
 		// sending email for OTP verification to provided email address by user
