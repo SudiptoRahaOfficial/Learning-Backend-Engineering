@@ -28,8 +28,22 @@ async function signupPostController(req, res) {
 		})
 	}
 
+	// validating password's length
+	if (password.length < 6) {
+		return res.status(400).json({
+			message: 'Password must be at least 6 characters',
+		})
+	}
+
 	// normalizing email
 	const normalizedEmail = email.trim().toLowerCase()
+
+	// validating email format
+	if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+		return res.status(400).json({
+			message: 'Invalid email address',
+		})
+	}
 
 	try {
 		// returning response with error on duplicate username/email
