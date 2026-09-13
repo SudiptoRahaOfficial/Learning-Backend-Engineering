@@ -19,7 +19,7 @@ const {
 // controller for signup post route
 async function signupPostController(req, res) {
 	// extracting all data sent by client
-	const { username, email, password, role } = req.body
+	const { username, email, password } = req.body
 
 	// normalizing email
 	const normalizedEmail = email.trim().toLowerCase()
@@ -44,7 +44,6 @@ async function signupPostController(req, res) {
 			username,
 			email: normalizedEmail,
 			password: hashedPassword,
-			role,
 		})
 
 		// generating otp & otp email body html
