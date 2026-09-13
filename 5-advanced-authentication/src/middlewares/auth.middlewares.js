@@ -7,6 +7,7 @@
 const jwt = require('jsonwebtoken')
 const config = require('../config/env.config')
 const sessionModel = require('../models/session.model')
+const userModel = require('../models/user.model')
 
 // middleware for authenticate user
 async function authenticateUser(req, res, next) {
@@ -51,8 +52,22 @@ async function authenticateUser(req, res, next) {
 			})
 		}
 
+		// finding user by access token's id
+		const user = await userModel.findById(id).select('_id role')
+
+		// returning response with error if user not exist
+		if (!user) {
+			return res.status(401).json({
+				message: 'Unauthenticated user',
+			})
+		}
+
 		// attaching authenticated user data to request
-		req.user = { id, role, sessionId }
+		req.user = {
+			id: user._id,
+			role: user.role,
+			sessionId: session._id,
+		}
 
 		// passing request on success path
 		next()
