@@ -28,13 +28,6 @@ async function signupPostController(req, res) {
 		})
 	}
 
-	// validating password's length
-	if (password.length < 6) {
-		return res.status(400).json({
-			message: 'Password must be at least 6 characters',
-		})
-	}
-
 	// normalizing email
 	const normalizedEmail = email.trim().toLowerCase()
 
@@ -42,6 +35,13 @@ async function signupPostController(req, res) {
 	if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
 		return res.status(400).json({
 			message: 'Invalid email address',
+		})
+	}
+
+	// validating password's length
+	if (password.length < 6) {
+		return res.status(400).json({
+			message: 'Password must be at least 6 characters',
 		})
 	}
 
@@ -121,10 +121,20 @@ async function signinPostController(req, res) {
 	// extracting all data sent by client
 	const { username, email, password } = req.body
 
+	// normalizing email
+	const normalizedEmail = email.trim().toLowerCase()
+
+	// validating email format
+	if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+		return res.status(400).json({
+			message: 'Invalid email address',
+		})
+	}
+
 	try {
-		// finding user to db by username & email both
+		// finding user to db by username or email
 		const user = await userModel.findOne({
-			$or: [{ username }, { email }],
+			$or: [{ username }, { email: normalizedEmail }],
 		})
 
 		// returning response with error if user not found by username/email both
@@ -441,7 +451,7 @@ async function verifyEmailPostController(req, res) {
 	}
 
 	try {
-		// finding otp document to db by provided email
+		// finding otp document to db
 		const otpDoc = await otpModel.findOne({
 			email: normalizedEmail,
 			expiresAt: { $gt: new Date() },
