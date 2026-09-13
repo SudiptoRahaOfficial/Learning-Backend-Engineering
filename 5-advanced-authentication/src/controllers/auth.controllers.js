@@ -21,6 +21,13 @@ async function signupPostController(req, res) {
 	// extracting all data sent by client
 	const { username, email, password } = req.body
 
+	// validating required fields
+	if (!username || !email || !password) {
+		return res.status(400).json({
+			message: 'Username, email and password are required',
+		})
+	}
+
 	// normalizing email
 	const normalizedEmail = email.trim().toLowerCase()
 
