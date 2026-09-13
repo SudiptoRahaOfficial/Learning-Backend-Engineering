@@ -81,6 +81,13 @@ async function authenticateUser(req, res, next) {
 
 // middleware for authorize artist
 function authorizeArtist(req, res, next) {
+	// validating user object exists with request
+	if (!req.user) {
+		return res.status(401).json({
+			message: 'Unauthenticated user',
+		})
+	}
+
 	// extracting role from authenticated user
 	const { role } = req.user
 
