@@ -86,9 +86,12 @@ async function signupPostController(req, res) {
 			})
 		}
 
+		// logging on unexpected server error
+		console.error(error)
+
 		// response back on error
 		return res.status(500).json({
-			message: 'Server error',
+			message: 'Internal Server error',
 		})
 	}
 }
@@ -186,9 +189,12 @@ async function signinPostController(req, res) {
 			accessToken,
 		})
 	} catch (error) {
+		// logging on unexpected server error
+		console.error(error)
+
 		// response back on error
 		return res.status(500).json({
-			message: 'Server error',
+			message: 'Internal Server error',
 		})
 	}
 }
@@ -278,9 +284,12 @@ async function signoutPostController(req, res) {
 			})
 		}
 
+		// logging on unexpected server error
+		console.error(error)
+
 		// returning response for unexpected server errors
 		return res.status(500).json({
-			message: 'Server error',
+			message: 'Internal Server error',
 		})
 	}
 }
@@ -372,9 +381,12 @@ async function signoutAllPostController(req, res) {
 			})
 		}
 
+		// logging on unexpected server error
+		console.error(error)
+
 		// returning response for unexpected server errors
 		return res.status(500).json({
-			message: 'Server error',
+			message: 'Internal Server error',
 		})
 	}
 }
@@ -459,9 +471,12 @@ async function verifyEmailPostController(req, res) {
 			},
 		})
 	} catch (error) {
+		// logging on unexpected server error
+		console.error(error)
+
 		// returning response for unexpected server errors
 		return res.status(500).json({
-			message: 'Server error',
+			message: 'Internal Server error',
 		})
 	}
 }
@@ -558,9 +573,12 @@ async function resendVerifyEmailPostController(req, res) {
 			message: 'A new OTP has been sent',
 		})
 	} catch (error) {
+		// logging on unexpected server error
+		console.error(error)
+
 		// response back for unexpected server errors
 		return res.status(500).json({
-			message: 'Server error',
+			message: 'Internal Server error',
 		})
 	}
 }
@@ -687,9 +705,12 @@ async function refreshTokenPostController(req, res) {
 			})
 		}
 
+		// logging on unexpected server error
+		console.error(error)
+
 		// returning response for unexpected server errors
 		return res.status(500).json({
-			message: 'Server error',
+			message: 'Internal Server error',
 		})
 	}
 }
