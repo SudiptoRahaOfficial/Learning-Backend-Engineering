@@ -1,6 +1,11 @@
+/*
+ * file name: storage.service.js
+ * responsibility: responsible for cloud storage services
+ */
+
 // importing dependencis
 const ImageKit = require('@imagekit/nodejs')
-const config = require('../config/config')
+const config = require('../config/env.config')
 
 // client account private key setup
 const client = new ImageKit({

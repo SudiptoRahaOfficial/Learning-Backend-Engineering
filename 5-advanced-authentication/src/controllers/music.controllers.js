@@ -1,3 +1,8 @@
+/*
+ * file name: music.controllers.js
+ * responsibility: responsible for all music related api controllers
+ */
+
 // importing dependencis
 const musicModel = require('../models/music.model')
 const uploadFile = require('../services/storage.service')

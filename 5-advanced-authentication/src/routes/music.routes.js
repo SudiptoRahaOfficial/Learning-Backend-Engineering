@@ -1,3 +1,8 @@
+/*
+ * file name: music.routes.js
+ * responsibility: responsible for all music related api endpoints
+ */
+
 // importing dependencis
 const router = require('express').Router()
 const upload = require('../utils/uploadWithMulter')

@@ -1,3 +1,8 @@
+/*
+ * file name: otp.model.js
+ * responsibility: responsible for OTP schema & model design
+ */
+
 // importing dependencis
 const { Schema, model } = require('mongoose')
 

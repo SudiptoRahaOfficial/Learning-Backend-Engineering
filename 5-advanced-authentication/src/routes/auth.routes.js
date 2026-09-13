@@ -1,3 +1,8 @@
+/*
+ * file name: auth.routes.js
+ * responsibility: responsible for all auth related api endpoints
+ */
+
 // importing dependencis
 const router = require('express').Router()
 const {

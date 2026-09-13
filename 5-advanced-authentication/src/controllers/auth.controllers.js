@@ -1,7 +1,12 @@
+/*
+ * file name: auth.controllers.js
+ * responsibility: responsible for all auth related api controllers
+ */
+
 // importing dependencis
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
-const config = require('../config/config')
+const config = require('../config/env.config')
 const userModel = require('../models/user.model')
 const sessionModel = require('../models/session.model')
 const otpModel = require('../models/otp.model')

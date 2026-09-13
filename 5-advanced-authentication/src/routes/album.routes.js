@@ -1,3 +1,8 @@
+/*
+ * file name: album.routes.js
+ * responsibility: responsible for all album related api endpoints
+ */
+
 // importing dependencis
 const router = require('express').Router()
 const { authenticateUser } = require('../middlewares/auth.middlewares')

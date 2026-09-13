@@ -1,3 +1,8 @@
+/*
+ * file name: env.config.js
+ * responsibility: responsible for all .env variables imports
+ */
+
 // importing & configuring dotenv
 require('dotenv').config()
 

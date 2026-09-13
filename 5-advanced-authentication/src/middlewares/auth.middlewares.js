@@ -1,6 +1,11 @@
+/*
+ * file name: auth.middlewares.js
+ * responsibility: responsible for all auth related middlewares
+ */
+
 // importing dependencis
 const jwt = require('jsonwebtoken')
-const config = require('../config/config')
+const config = require('../config/env.config')
 const sessionModel = require('../models/session.model')
 
 // middleware for authenticate user

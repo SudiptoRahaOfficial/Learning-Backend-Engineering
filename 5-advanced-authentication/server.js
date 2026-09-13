@@ -1,6 +1,11 @@
+/*
+ * file name: server.js
+ * responsibility: responsible for application's server
+ */
+
 // importing dependencis
 const app = require('./src/app')
-const config = require('./src/config/config')
+const config = require('./src/config/env.config')
 const connectDB = require('./src/db/connectDB')
 
 const port = config.PORT // defining port

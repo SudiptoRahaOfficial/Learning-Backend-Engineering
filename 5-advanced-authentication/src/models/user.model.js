@@ -1,3 +1,8 @@
+/*
+ * file name: user.model.js
+ * responsibility: responsible for user schema & model design
+ */
+
 // importing dependencis
 const { Schema, model } = require('mongoose')
 

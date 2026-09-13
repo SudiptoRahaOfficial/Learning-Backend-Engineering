@@ -1,5 +1,11 @@
+/*
+ * file name: email.service.js
+ * responsibility: responsible for email services
+ */
+
+// importing dependencis
 const nodemailer = require('nodemailer')
-const config = require('../config/config')
+const config = require('../config/env.config')
 
 // configuring transporter
 const transporter = nodemailer.createTransport({

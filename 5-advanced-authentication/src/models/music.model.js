@@ -1,3 +1,8 @@
+/*
+ * file name: music.model.js
+ * responsibility: responsible for music schema & model design
+ */
+
 // importing dependencis
 const { Schema, model } = require('mongoose')
 

@@ -1,3 +1,8 @@
+/*
+ * file name: album.model.js
+ * responsibility: responsible for album schema & model design
+ */
+
 // importing dependencis
 const { Schema, model } = require('mongoose')
 

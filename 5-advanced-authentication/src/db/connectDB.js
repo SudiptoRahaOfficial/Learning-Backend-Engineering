@@ -1,6 +1,11 @@
+/*
+ * file name: connectDB.js
+ * responsibility: responsible for making db connection
+ */
+
 // importing dependencis
 const { connect } = require('mongoose')
-const config = require('../config/config')
+const config = require('../config/env.config')
 
 // function for db connection
 async function connectDB() {

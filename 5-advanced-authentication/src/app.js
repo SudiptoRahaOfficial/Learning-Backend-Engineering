@@ -1,3 +1,8 @@
+/*
+ * file name: app.js
+ * responsibility: responsible for application's root functionalities
+ */
+
 // importing dependencis
 const express = require('express')
 const cookieParser = require('cookie-parser')

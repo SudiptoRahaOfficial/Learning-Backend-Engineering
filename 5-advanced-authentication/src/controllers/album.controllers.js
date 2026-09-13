@@ -1,3 +1,8 @@
+/*
+ * file name: album.controllers.js
+ * responsibility: responsible for all album related api controllers
+ */
+
 // importing dependencis
 const albumModel = require('../models/album.model')
 

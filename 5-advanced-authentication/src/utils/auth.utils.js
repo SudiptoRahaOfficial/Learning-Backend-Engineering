@@ -1,3 +1,8 @@
+/*
+ * file name: auth.utils.js
+ * responsibility: responsible for all auth related util functions
+ */
+
 // importing dependencis
 const crypto = require('crypto')
 
