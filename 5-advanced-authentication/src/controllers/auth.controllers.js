@@ -28,6 +28,9 @@ async function signupPostController(req, res) {
 		})
 	}
 
+	// normalizing username
+	const normalizedUsername = username.trim()
+
 	// normalizing email
 	const normalizedEmail = email.trim().toLowerCase()
 
@@ -48,7 +51,7 @@ async function signupPostController(req, res) {
 	try {
 		// returning response with error on duplicate username/email
 		const isUserAlreadyExists = await userModel.findOne({
-			$or: [{ username }, { email: normalizedEmail }],
+			$or: [{ username: normalizedUsername }, { email: normalizedEmail }],
 		})
 
 		if (isUserAlreadyExists) {
@@ -62,7 +65,7 @@ async function signupPostController(req, res) {
 
 		// creating new user to db
 		const user = await userModel.create({
-			username,
+			username: normalizedUsername,
 			email: normalizedEmail,
 			password: hashedPassword,
 		})
@@ -71,25 +74,37 @@ async function signupPostController(req, res) {
 		const otp = generateSecureOTP()
 		const emailBodyHtml = generateEmailBodyHtml(otp)
 
-		// encrypting otp & creating new otp obj to db with hashedOtp
+		// encrypting otp
 		const hashedOtp = await bcrypt.hash(otp, 10)
-		await otpModel.create({
+
+		// creating new otp document to db
+		const otpDoc = await otpModel.create({
 			email: normalizedEmail,
 			user: user._id,
 			otpHash: hashedOtp,
 			expiresAt: new Date(Date.now() + 1 * 60 * 1000),
 		})
 
-		// sending email for OTP verification to provided email address by user
-		await sendEmail(
-			email,
-			'OTP verification',
-			`Your OTP code is ${otp}`,
-			emailBodyHtml,
-		)
+		try {
+			// sending new OTP to user's email
+			await sendEmail(
+				normalizedEmail,
+				'OTP verification',
+				`Your OTP code is ${otp}`,
+				emailBodyHtml,
+			)
+		} catch (emailError) {
+			// if email sending failed remove the newly created OTP
+			await otpModel.deleteOne({
+				_id: otpDoc._id,
+			})
+
+			// throwing email error
+			throw emailError
+		}
 
 		// response back on success
-		return res.status(202).json({
+		return res.status(201).json({
 			message: 'Signup successful! Please verify your email.',
 			user: {
 				id: user._id,
@@ -121,6 +136,9 @@ async function signinPostController(req, res) {
 	// extracting all data sent by client
 	const { username, email, password } = req.body
 
+	// normalizing username
+	const normalizedUsername = username.trim()
+
 	// normalizing email
 	const normalizedEmail = email.trim().toLowerCase()
 
@@ -134,7 +152,7 @@ async function signinPostController(req, res) {
 	try {
 		// finding user to db by username or email
 		const user = await userModel.findOne({
-			$or: [{ username }, { email: normalizedEmail }],
+			$or: [{ username: normalizedUsername }, { email: normalizedEmail }],
 		})
 
 		// returning response with error if user not found by username/email both
@@ -584,12 +602,7 @@ async function resendVerifyEmailPostController(req, res) {
 				emailBodyHtml,
 			)
 		} catch (emailError) {
-			/*
-			 * Email delivery failed.
-			 *
-			 * Remove the newly created OTP so that the user
-			 * cannot verify using an OTP that was never delivered.
-			 */
+			// if email sending failed remove the newly created OTP
 			await otpModel.deleteOne({
 				_id: otpDoc._id,
 			})
