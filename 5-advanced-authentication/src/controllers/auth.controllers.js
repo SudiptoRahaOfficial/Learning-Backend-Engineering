@@ -138,6 +138,7 @@ async function signinPostController(req, res) {
 		// generating refresh token
 		const refreshToken = jwt.sign(
 			{
+				type: 'refresh',
 				id: user._id,
 				role: user.role,
 				sessionId: session._id,
@@ -164,6 +165,7 @@ async function signinPostController(req, res) {
 		// generating access token
 		const accessToken = jwt.sign(
 			{
+				type: 'access',
 				id: user._id,
 				role: user.role,
 				sessionId: session._id,
@@ -208,10 +210,10 @@ async function signoutPostController(req, res) {
 		const decoded = jwt.verify(refreshToken, config.JWT_SECRET)
 
 		// extracting user id, user role and session id
-		const { id, role, sessionId } = decoded
+		const { type, id, role, sessionId } = decoded
 
 		// returning response with error if required data missing
-		if (!id || !role || !sessionId) {
+		if (type !== 'refresh' || !id || !role || !sessionId) {
 			return res.status(401).json({
 				message: 'Invalid refresh token',
 			})
@@ -300,10 +302,10 @@ async function signoutAllPostController(req, res) {
 		const decoded = jwt.verify(refreshToken, config.JWT_SECRET)
 
 		// extracting user id and session id
-		const { id, sessionId } = decoded
+		const { type, id, role, sessionId } = decoded
 
 		// returning response with error if required token data missing
-		if (!id || !sessionId) {
+		if (type !== 'refresh' || !id || !role || !sessionId) {
 			return res.status(401).json({
 				message: 'Invalid refresh token',
 			})
@@ -580,10 +582,10 @@ async function refreshTokenPostController(req, res) {
 		const decoded = jwt.verify(refreshToken, config.JWT_SECRET)
 
 		// extracting user id, user role and session id from verified token
-		const { id, role, sessionId } = decoded
+		const { type, id, role, sessionId } = decoded
 
 		// returning response with error if required token data missing
-		if (!id || !role || !sessionId) {
+		if (type !== 'refresh' || !id || !role || !sessionId) {
 			return res.status(401).json({
 				message: 'Invalid refresh token',
 			})
@@ -629,6 +631,7 @@ async function refreshTokenPostController(req, res) {
 		// generating a new refresh token
 		const newRefreshToken = jwt.sign(
 			{
+				type: 'refresh',
 				id: user._id,
 				role: user.role,
 				sessionId: session._id,
@@ -655,6 +658,7 @@ async function refreshTokenPostController(req, res) {
 		// generating new access token
 		const accessToken = jwt.sign(
 			{
+				type: 'access',
 				id: user._id,
 				role: user.role,
 				sessionId: session._id,

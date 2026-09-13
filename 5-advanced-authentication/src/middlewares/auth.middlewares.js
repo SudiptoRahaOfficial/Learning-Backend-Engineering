@@ -28,10 +28,10 @@ async function authenticateUser(req, res, next) {
 		const decoded = jwt.verify(accessToken, config.JWT_SECRET)
 
 		// extracting user id and session id
-		const { id, role, sessionId } = decoded
+		const { type, id, role, sessionId } = decoded
 
 		// returning response with error if required data missing
-		if (!id || !role || !sessionId) {
+		if (type !== 'access' || !id || !role || !sessionId) {
 			return res.status(401).json({
 				message: 'Invalid access token',
 			})
