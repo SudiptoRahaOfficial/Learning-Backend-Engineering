@@ -451,6 +451,104 @@ async function verifyEmailPostController(req, res) {
 	}
 }
 
+// controller for resend-verify-email post route
+async function resendVerifyEmailPostController(req, res) {
+	// extracting email sent by client
+	const { email } = req.body
+
+	// validating required field
+	if (!email) {
+		return res.status(400).json({
+			message: 'Email is required',
+		})
+	}
+
+	// normalizing email
+	const normalizedEmail = email.trim().toLowerCase()
+
+	// validating email format
+	if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+		return res.status(400).json({
+			message: 'Invalid email address',
+		})
+	}
+
+	try {
+		// finding user by normalized email
+		const user = await userModel.findOne({
+			email: normalizedEmail,
+		})
+
+		// returning response with error if user not exists
+		if (!user) {
+			return res.status(200).json({
+				message: 'User not found',
+			})
+		}
+
+		// returning response if email already verified
+		if (user.verified) {
+			return res.status(200).json({
+				message: 'Email already verified',
+			})
+		}
+
+		// invalidating all previously generated OTPs for this user
+		await otpModel.deleteMany({
+			user: user._id,
+		})
+
+		// generating a new secure OTP
+		const otp = generateSecureOTP()
+
+		// generating OTP email body
+		const emailBodyHtml = generateEmailBodyHtml(otp)
+
+		// hashing OTP before storing it in database
+		const hashedOtp = await bcrypt.hash(otp, 10)
+
+		// creating new OTP document
+		const otpDoc = await otpModel.create({
+			email: normalizedEmail,
+			user: user._id,
+			otpHash: hashedOtp,
+		})
+
+		try {
+			// sending new OTP to user's email
+			await sendEmail(
+				normalizedEmail,
+				'OTP verification',
+				`Your OTP code is ${otp}`,
+				emailBodyHtml,
+			)
+		} catch (emailError) {
+			/*
+			 * Email delivery failed.
+			 *
+			 * Remove the newly created OTP so that the user
+			 * cannot verify using an OTP that was never delivered.
+			 */
+			await otpModel.deleteOne({
+				_id: otpDoc._id,
+			})
+
+			// throwing email error
+			throw emailError
+		}
+
+		// response back on success
+		return res.status(200).json({
+			message: 'A new OTP has been sent',
+		})
+	} catch (error) {
+		// response back for unexpected server errors
+		return res.status(500).json({
+			message: 'Server error',
+		})
+	}
+}
+
 // controller for refresh-token post route
 async function refreshTokenPostController(req, res) {
 	// extracting refreshToken from cookies
@@ -585,5 +683,6 @@ module.exports = {
 	signoutPostController,
 	signoutAllPostController,
 	verifyEmailPostController,
+	resendVerifyEmailPostController,
 	refreshTokenPostController,
 }

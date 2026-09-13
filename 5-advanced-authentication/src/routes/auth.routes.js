@@ -11,6 +11,7 @@ const {
 	signoutPostController,
 	signoutAllPostController,
 	verifyEmailPostController,
+	resendVerifyEmailPostController,
 	refreshTokenPostController,
 } = require('../controllers/auth.controllers')
 
@@ -28,6 +29,9 @@ router.post('/signout-all', signoutAllPostController)
 
 // verify-email post api
 router.post('/verify-email', verifyEmailPostController)
+
+// resend-verify-email post api
+router.post('/resend-verify-email', resendVerifyEmailPostController)
 
 // refresh-token get api
 router.post('/refresh-token', refreshTokenPostController)
