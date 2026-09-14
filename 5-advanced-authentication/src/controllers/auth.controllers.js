@@ -212,7 +212,7 @@ async function signinPostController(req, res) {
 				role: user.role,
 				sessionId: session._id,
 			},
-			config.JWT_SECRET,
+			config.REFRESH_TOKEN_SECRET,
 			{ expiresIn: '7d' },
 		)
 
@@ -237,7 +237,7 @@ async function signinPostController(req, res) {
 				role: user.role,
 				sessionId: session._id,
 			},
-			config.JWT_SECRET,
+			config.ACCESS_TOKEN_SECRET,
 			{ expiresIn: '15m' },
 		)
 
@@ -277,7 +277,7 @@ async function signoutPostController(req, res) {
 
 	try {
 		// verifying refresh token
-		const decoded = jwt.verify(refreshToken, config.JWT_SECRET)
+		const decoded = jwt.verify(refreshToken, config.REFRESH_TOKEN_SECRET)
 
 		// extracting user id, user role and session id
 		const { type, id, role, sessionId } = decoded
@@ -372,7 +372,7 @@ async function signoutAllPostController(req, res) {
 
 	try {
 		// verifying refresh token
-		const decoded = jwt.verify(refreshToken, config.JWT_SECRET)
+		const decoded = jwt.verify(refreshToken, config.REFRESH_TOKEN_SECRET)
 
 		// extracting user id and session id
 		const { type, id, role, sessionId } = decoded
@@ -656,7 +656,7 @@ async function refreshTokenPostController(req, res) {
 
 	try {
 		// verifying refresh token
-		const decoded = jwt.verify(refreshToken, config.JWT_SECRET)
+		const decoded = jwt.verify(refreshToken, config.REFRESH_TOKEN_SECRET)
 
 		// extracting user id, user role and session id from verified token
 		const { type, id, role, sessionId } = decoded
@@ -713,7 +713,7 @@ async function refreshTokenPostController(req, res) {
 				role: user.role,
 				sessionId: session._id,
 			},
-			config.JWT_SECRET,
+			config.REFRESH_TOKEN_SECRET,
 			{ expiresIn: '7d' },
 		)
 
@@ -738,7 +738,7 @@ async function refreshTokenPostController(req, res) {
 				role: user.role,
 				sessionId: session._id,
 			},
-			config.JWT_SECRET,
+			config.ACCESS_TOKEN_SECRET,
 			{ expiresIn: '15m' },
 		)
 

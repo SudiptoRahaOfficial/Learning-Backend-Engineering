@@ -26,7 +26,7 @@ async function authenticateUser(req, res, next) {
 
 	try {
 		// verifying accessToken and extracting authenticated user data
-		const decoded = jwt.verify(accessToken, config.JWT_SECRET)
+		const decoded = jwt.verify(accessToken, config.ACCESS_TOKEN_SECRET)
 
 		// extracting user id and session id
 		const { type, id, role, sessionId } = decoded

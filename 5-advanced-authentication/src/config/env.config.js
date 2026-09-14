@@ -10,15 +10,22 @@ require('dotenv').config()
 if (!process.env.PORT) {
 	throw new Error('PORT is not defined in .env')
 }
+
 if (!process.env.DB_CONNECTION_URI) {
 	throw new Error('DB_CONNECTION_URI is not defined in .env')
 }
-if (!process.env.JWT_SECRET) {
-	throw new Error('JWT_SECRET is not defined in .env')
+
+if (!process.env.ACCESS_TOKEN_SECRET) {
+	throw new Error('ACCESS_TOKEN_SECRET is not defined in .env')
 }
+if (!process.env.REFRESH_TOKEN_SECRET) {
+	throw new Error('REFRESH_TOKEN_SECRET is not defined in .env')
+}
+
 if (!process.env.IMAGEKIT_PRIVATE_KEY) {
 	throw new Error('IMAGEKIT_PRIVATE_KEY is not defined in .env')
 }
+
 if (!process.env.GOOGLE_CLIENT_ID) {
 	throw new Error('GOOGLE_CLIENT_ID is not defined in .env')
 }
@@ -35,9 +42,14 @@ if (!process.env.GOOGLE_USER) {
 // configuration object
 const config = {
 	PORT: process.env.PORT,
+
 	DB_CONNECTION_URI: process.env.DB_CONNECTION_URI,
-	JWT_SECRET: process.env.JWT_SECRET,
+
+	ACCESS_TOKEN_SECRET: process.env.ACCESS_TOKEN_SECRET,
+	REFRESH_TOKEN_SECRET: process.env.REFRESH_TOKEN_SECRET,
+
 	IMAGEKIT_PRIVATE_KEY: process.env.IMAGEKIT_PRIVATE_KEY,
+
 	GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
 	GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
 	GOOGLE_REFRESH_TOKEN: process.env.GOOGLE_REFRESH_TOKEN,
