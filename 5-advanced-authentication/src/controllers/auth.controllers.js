@@ -126,7 +126,7 @@ async function signupPostController(req, res) {
 
 		// response back on error
 		return res.status(500).json({
-			message: 'Internal Server error',
+			message: 'Internal server error',
 		})
 	}
 }
@@ -256,7 +256,7 @@ async function signinPostController(req, res) {
 
 		// response back on error
 		return res.status(500).json({
-			message: 'Internal Server error',
+			message: 'Internal server error',
 		})
 	}
 }
@@ -351,7 +351,7 @@ async function signoutPostController(req, res) {
 
 		// returning response for unexpected server errors
 		return res.status(500).json({
-			message: 'Internal Server error',
+			message: 'Internal server error',
 		})
 	}
 }
@@ -448,7 +448,7 @@ async function signoutAllPostController(req, res) {
 
 		// returning response for unexpected server errors
 		return res.status(500).json({
-			message: 'Internal Server error',
+			message: 'Internal server error',
 		})
 	}
 }
@@ -538,7 +538,7 @@ async function verifyEmailPostController(req, res) {
 
 		// returning response for unexpected server errors
 		return res.status(500).json({
-			message: 'Internal Server error',
+			message: 'Internal server error',
 		})
 	}
 }
@@ -635,7 +635,7 @@ async function resendVerifyEmailPostController(req, res) {
 
 		// response back for unexpected server errors
 		return res.status(500).json({
-			message: 'Internal Server error',
+			message: 'Internal server error',
 		})
 	}
 }
@@ -765,7 +765,7 @@ async function refreshTokenPostController(req, res) {
 
 		// returning response for unexpected server errors
 		return res.status(500).json({
-			message: 'Internal Server error',
+			message: 'Internal server error',
 		})
 	}
 }

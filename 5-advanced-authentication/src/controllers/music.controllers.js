@@ -44,7 +44,7 @@ async function uploadPostController(req, res) {
 	} catch (error) {
 		// response back on failure
 		res.status(500).json({
-			message: 'Server error',
+			message: 'Internal server error',
 		})
 	}
 }
@@ -63,7 +63,7 @@ async function getAllMusicsController(req, res) {
 	} catch (error) {
 		// response back on failure
 		res.status(500).json({
-			message: 'Server error',
+			message: 'Internal server error',
 		})
 	}
 }

@@ -39,7 +39,7 @@ async function createPostController(req, res, next) {
 
 		// response back on failure
 		res.status(500).json({
-			message: 'Server error',
+			message: 'Internal server error',
 		})
 	}
 }
@@ -61,7 +61,7 @@ async function getAllAlbumsController(req, res) {
 	} catch (error) {
 		// response back on failure
 		res.status(500).json({
-			message: 'Server error',
+			message: 'Internal server error',
 		})
 	}
 }
@@ -86,7 +86,7 @@ async function getAlbumById(req, res) {
 	} catch (error) {
 		// response back on failure
 		res.status(500).json({
-			message: 'Server error',
+			message: 'Internal server error',
 		})
 	}
 }
