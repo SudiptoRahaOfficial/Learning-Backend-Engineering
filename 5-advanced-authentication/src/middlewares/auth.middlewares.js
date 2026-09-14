@@ -72,6 +72,16 @@ async function authenticateUser(req, res, next) {
 		// passing request on success path
 		next()
 	} catch (error) {
+		// returning 401 if the access token is invalid or expired
+		if (
+			error.name === 'JsonWebTokenError' ||
+			error.name === 'TokenExpiredError'
+		) {
+			return res.status(401).json({
+				message: 'Invalid access token',
+			})
+		}
+
 		// logging on unexpected server error
 		console.error(error)
 
