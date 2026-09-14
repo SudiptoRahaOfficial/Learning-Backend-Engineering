@@ -216,6 +216,11 @@ async function signinPostController(req, res) {
 			{ expiresIn: '7d' },
 		)
 
+		// hashing & storing refresh token to db
+		const hashedRefreshToken = await bcrypt.hash(refreshToken, 10)
+		session.refreshTokenHash = hashedRefreshToken
+		await session.save()
+
 		// setting refreshToken to browser's cookie
 		res.cookie('refreshToken', refreshToken, {
 			httpOnly: true,
@@ -223,13 +228,6 @@ async function signinPostController(req, res) {
 			sameSite: 'strict',
 			maxAge: 7 * 24 * 60 * 60 * 1000, // 7 day
 		})
-
-		// hashing refresh token for secure session storage
-		const hashedRefreshToken = await bcrypt.hash(refreshToken, 10)
-
-		// storing refresh token hash in session & saving to db
-		session.refreshTokenHash = hashedRefreshToken
-		await session.save()
 
 		// generating access token
 		const accessToken = jwt.sign(
@@ -719,6 +717,11 @@ async function refreshTokenPostController(req, res) {
 			{ expiresIn: '7d' },
 		)
 
+		// hashing & storing refresh token to db
+		const hashedNewRefreshToken = await bcrypt.hash(newRefreshToken, 10)
+		session.refreshTokenHash = hashedNewRefreshToken
+		await session.save()
+
 		// setting new refreshToken to browser's cookie
 		res.cookie('refreshToken', newRefreshToken, {
 			httpOnly: true,
@@ -726,13 +729,6 @@ async function refreshTokenPostController(req, res) {
 			sameSite: 'strict',
 			maxAge: 7 * 24 * 60 * 60 * 1000, // 7 day
 		})
-
-		// hashing refresh token for secure session storage
-		const hashedNewRefreshToken = await bcrypt.hash(newRefreshToken, 10)
-
-		// storing refresh token hash in session & saving to db
-		session.refreshTokenHash = hashedNewRefreshToken
-		await session.save()
 
 		// generating new access token
 		const accessToken = jwt.sign(
