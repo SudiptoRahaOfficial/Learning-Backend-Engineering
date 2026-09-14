@@ -53,11 +53,7 @@ async function uploadPostController(req, res) {
 async function getAllMusicsController(req, res) {
 	try {
 		// fetching all musics form db
-		const musics = await musicModel
-			.find()
-			.skip(1)
-			.limit(1)
-			.populate('artist', 'username email')
+		const musics = await musicModel.find()
 
 		// response back on success
 		return res.status(200).json({
