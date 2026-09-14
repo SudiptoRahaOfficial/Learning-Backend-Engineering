@@ -15,7 +15,7 @@ const {
 // album create post route
 router.post('/create', authenticateUser, createPostController)
 
-// get perticular album route
+// get particular album route
 router.get('/:id', authenticateUser, getAlbumById)
 
 // get all albums route
