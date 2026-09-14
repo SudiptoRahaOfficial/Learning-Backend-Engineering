@@ -15,11 +15,11 @@ const {
 // album create post route
 router.post('/create', authenticateUser, createPostController)
 
-// get all albums route
-router.get('/', authenticateUser, getAllAlbumsController)
-
 // get perticular album route
 router.get('/:id', authenticateUser, getAlbumById)
+
+// get all albums route
+router.get('/', authenticateUser, getAllAlbumsController)
 
 // exporting router
 module.exports = router
