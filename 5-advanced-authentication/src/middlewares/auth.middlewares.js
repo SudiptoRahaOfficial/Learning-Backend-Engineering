@@ -29,10 +29,10 @@ async function authenticateUser(req, res, next) {
 		const decoded = jwt.verify(accessToken, config.ACCESS_TOKEN_SECRET)
 
 		// extracting user id and session id
-		const { type, id, role, sessionId } = decoded
+		const { type, id, sessionId } = decoded
 
 		// returning response with error if required data missing
-		if (type !== 'access' || !id || !role || !sessionId) {
+		if (type !== 'access' || !id || !sessionId) {
 			return res.status(401).json({
 				message: 'Invalid access token',
 			})
@@ -53,7 +53,7 @@ async function authenticateUser(req, res, next) {
 		}
 
 		// finding user by access token's id
-		const user = await userModel.findById(id).select('_id role')
+		const user = await userModel.findById(id)
 
 		// returning response with error if user not exist
 		if (!user) {
@@ -72,9 +72,12 @@ async function authenticateUser(req, res, next) {
 		// passing request on success path
 		next()
 	} catch (error) {
-		// returning response with error if accessToken got invalid
-		return res.status(401).json({
-			message: 'Invalid access token',
+		// logging on unexpected server error
+		console.error(error)
+
+		// response back on error
+		return res.status(500).json({
+			message: 'Internal Server error',
 		})
 	}
 }
@@ -88,11 +91,8 @@ function authorizeArtist(req, res, next) {
 		})
 	}
 
-	// extracting role from authenticated user
-	const { role } = req.user
-
 	// returning response with error if role is not artist
-	if (role !== 'artist') {
+	if (req.user.role !== 'artist') {
 		return res
 			.status(403)
 			.json({ message: 'Forbidden! Artist account required to access' })

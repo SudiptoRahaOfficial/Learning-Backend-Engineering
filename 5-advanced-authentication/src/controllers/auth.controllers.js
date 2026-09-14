@@ -209,7 +209,6 @@ async function signinPostController(req, res) {
 			{
 				type: 'refresh',
 				id: user._id,
-				role: user.role,
 				sessionId: session._id,
 			},
 			config.REFRESH_TOKEN_SECRET,
@@ -234,7 +233,6 @@ async function signinPostController(req, res) {
 			{
 				type: 'access',
 				id: user._id,
-				role: user.role,
 				sessionId: session._id,
 			},
 			config.ACCESS_TOKEN_SECRET,
@@ -280,10 +278,10 @@ async function signoutPostController(req, res) {
 		const decoded = jwt.verify(refreshToken, config.REFRESH_TOKEN_SECRET)
 
 		// extracting user id, user role and session id
-		const { type, id, role, sessionId } = decoded
+		const { type, id, sessionId } = decoded
 
 		// returning response with error if required data missing
-		if (type !== 'refresh' || !id || !role || !sessionId) {
+		if (type !== 'refresh' || !id || !sessionId) {
 			return res.status(401).json({
 				message: 'Invalid refresh token',
 			})
@@ -375,10 +373,10 @@ async function signoutAllPostController(req, res) {
 		const decoded = jwt.verify(refreshToken, config.REFRESH_TOKEN_SECRET)
 
 		// extracting user id and session id
-		const { type, id, role, sessionId } = decoded
+		const { type, id, sessionId } = decoded
 
 		// returning response with error if required token data missing
-		if (type !== 'refresh' || !id || !role || !sessionId) {
+		if (type !== 'refresh' || !id || !sessionId) {
 			return res.status(401).json({
 				message: 'Invalid refresh token',
 			})
@@ -659,10 +657,10 @@ async function refreshTokenPostController(req, res) {
 		const decoded = jwt.verify(refreshToken, config.REFRESH_TOKEN_SECRET)
 
 		// extracting user id, user role and session id from verified token
-		const { type, id, role, sessionId } = decoded
+		const { type, id, sessionId } = decoded
 
 		// returning response with error if required token data missing
-		if (type !== 'refresh' || !id || !role || !sessionId) {
+		if (type !== 'refresh' || !id || !sessionId) {
 			return res.status(401).json({
 				message: 'Invalid refresh token',
 			})
@@ -710,7 +708,6 @@ async function refreshTokenPostController(req, res) {
 			{
 				type: 'refresh',
 				id: user._id,
-				role: user.role,
 				sessionId: session._id,
 			},
 			config.REFRESH_TOKEN_SECRET,
@@ -735,7 +732,6 @@ async function refreshTokenPostController(req, res) {
 			{
 				type: 'access',
 				id: user._id,
-				role: user.role,
 				sessionId: session._id,
 			},
 			config.ACCESS_TOKEN_SECRET,
