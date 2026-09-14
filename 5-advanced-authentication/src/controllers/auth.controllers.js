@@ -136,24 +136,42 @@ async function signinPostController(req, res) {
 	// extracting all data sent by client
 	const { username, email, password } = req.body
 
-	// normalizing username
-	const normalizedUsername = username.trim()
+	// normalizing username & email
+	const normalizedUsername = username?.trim()
+	const normalizedEmail = email?.trim().toLowerCase()
 
-	// normalizing email
-	const normalizedEmail = email.trim().toLowerCase()
+	// validating required fields
+	if ((!normalizedUsername && !normalizedEmail) || !password) {
+		return res.status(400).json({
+			message: 'Username or email and password are required',
+		})
+	}
+
+	// validating that only one identifier is provided
+	if (normalizedUsername && normalizedEmail) {
+		return res.status(400).json({
+			message: 'Provide either username or email, not both',
+		})
+	}
 
 	// validating email format
-	if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+	if (
+		normalizedEmail &&
+		!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)
+	) {
 		return res.status(400).json({
 			message: 'Invalid email address',
 		})
 	}
 
+	// making query accroding username/email
+	const query = normalizedUsername
+		? { username: normalizedUsername }
+		: { email: normalizedEmail }
+
 	try {
 		// finding user to db by username or email
-		const user = await userModel.findOne({
-			$or: [{ username: normalizedUsername }, { email: normalizedEmail }],
-		})
+		const user = await userModel.findOne(query)
 
 		// returning response with error if user not found by username/email both
 		if (!user) {
