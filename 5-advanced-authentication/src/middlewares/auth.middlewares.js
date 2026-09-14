@@ -15,14 +15,21 @@ async function authenticateUser(req, res, next) {
 	const authorization = req.headers.authorization
 
 	// returning response with error if authorization header not found
-	if (!authorization || !authorization.startsWith('Bearer ')) {
+	if (!authorization) {
 		return res.status(401).json({
-			message: 'Unauthenticated user',
+			message: 'Authentication required',
 		})
 	}
 
-	// extracting accessToken from authorization header
-	const accessToken = authorization.split(' ')[1]
+	// extracting authorization scheme and access token
+	const [scheme, accessToken] = authorization.trim().split(/\s+/)
+
+	// validating Bearer authentication scheme and access token
+	if (scheme !== 'Bearer' || !accessToken) {
+		return res.status(401).json({
+			message: 'Invalid authorization header',
+		})
+	}
 
 	try {
 		// verifying accessToken and extracting authenticated user data
